@@ -1,0 +1,7 @@
+body { font-family: Arial; margin:0; padding:0; }
+header, footer { padding: 15px; background: #f1f1f1; display:flex; justify-content:space-between; }
+nav a, .header-right a { margin: 0 10px; }
+.products { display: flex; gap: 10px; flex-wrap: wrap; }
+.product-card { border: 1px solid #ddd; padding:10px; width: 150px; }
+button { cursor: pointer; }
+.carousel-img { width: 100%; height: auto; }

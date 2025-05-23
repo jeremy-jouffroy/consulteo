@@ -1,0 +1,39 @@
+<!-- checkout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulteo - Checkout</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <section>
+    <h2>Checkout</h2>
+    <div id="cart-summary"></div>
+    <form id="checkout-form">
+      <h3>About You</h3>
+      <input type="email" placeholder="Email" required>
+      <input type="password" placeholder="Password" required>
+      <h3>Delivery Address</h3>
+      <input placeholder="Name" required>
+      <input placeholder="Address" required>
+      <input placeholder="City" required>
+      <input placeholder="Postal Code" required>
+      <h3>Shipping Options</h3>
+      <select id="shipping">
+        <option value="100">Office delivery (€100)</option>
+        <option value="0">Pick up at Consulteo Office (Free)</option>
+      </select>
+      <h3>Payment Method</h3>
+      <select required>
+        <option>90 Days EOM</option>
+        <option>Wire transfer</option>
+      </select>
+      <button type="submit">Order Now</button>
+    </form>
+  </section>
+  <script src="scripts.js"></script>
+  <script>checkoutInit();</script>
+</body>
+</html>
+
