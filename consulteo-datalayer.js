@@ -156,19 +156,38 @@
      * Format item data for ecommerce tracking
      * @param {Object} item - Item object
      * @param {number} index - Item index for list position
+     * @param {string} listName - Name of the list (optional)
      * @returns {Object} Formatted item
      */
-    function formatItem(item, index = 0) {
-        return {
-            item_id: item.sku || item.ean,
+    function formatItem(item, index = 0, listName = null) {
+        // Determine proper category based on consultant type
+        let itemCategory = 'Consultants'; // default
+        if (item.category) {
+            const cat = item.category.toLowerCase();
+            if (cat === 'manager' || cat === 'managers') itemCategory = 'Managers';
+            else if (cat === 'lead' || cat === 'leads') itemCategory = 'Leads';
+            else if (cat === 'consultant' || cat === 'consultants') itemCategory = 'Consultants';
+            else if (cat === 'intern' || cat === 'interns') itemCategory = 'Interns';
+        }
+
+        const formattedItem = {
+            item_id: item.sku || item.ean || 'unknown',
             item_name: item.name,
-            item_category: item.category || 'Consultant',
+            item_category: itemCategory,
             item_variant: item.title,
             price: item.price,
             currency: CURRENCY,
             quantity: item.quantity || 1,
-            index: index + 1
+            index: index, // Start at 0 as requested
+            ean: item.ean || null // Custom parameter for EAN
         };
+
+        // Add item_list_name if provided
+        if (listName) {
+            formattedItem.item_list_name = listName;
+        }
+
+        return formattedItem;
     }
 
     /**
@@ -276,9 +295,12 @@
     function pushViewItemList(listName) {
         try {
             const items = [];
+            let itemListName;
             
             // Get items based on page type
             if (listName === 'homepage') {
+                itemListName = 'homepage_feature';
+                
                 // Featured consultants on homepage
                 const productCards = document.querySelectorAll('.product-card');
                 productCards.forEach((card, index) => {
@@ -288,28 +310,69 @@
                     const price = priceText ? parseFloat(priceText.replace(/[€/day,\s]/g, '')) : 0;
                     
                     if (name) {
-                        items.push({
-                            item_id: `featured-${index + 1}`,
-                            item_name: name,
-                            item_category: category || 'Consultant',
-                            item_variant: category,
+                        // Determine consultant category for item_category
+                        let itemCategory = 'Consultants';
+                        if (category) {
+                            const cat = category.toLowerCase();
+                            if (cat.includes('manager')) itemCategory = 'Managers';
+                            else if (cat.includes('lead')) itemCategory = 'Leads';
+                            else if (cat.includes('intern')) itemCategory = 'Interns';
+                        }
+
+                        const consultantData = {
+                            sku: `featured-${index}`,
+                            ean: `featured-${index}`,
+                            name: name,
+                            title: category || 'Consultant',
+                            category: itemCategory,
                             price: price,
-                            currency: CURRENCY,
-                            index: index + 1
-                        });
+                            quantity: 1
+                        };
+
+                        items.push(formatItem(consultantData, index, itemListName));
                     }
                 });
             } else {
-                // Category page items - will be populated when category data is available
-                items.push({
-                    item_id: 'category-placeholder',
-                    item_name: `${listName} consultants`,
-                    item_category: listName,
-                    item_variant: 'Category List',
-                    price: 0,
-                    currency: CURRENCY,
-                    index: 1
-                });
+                // Category page items
+                itemListName = `category_${listName}`;
+                
+                // Try to get items from category page data if available
+                if (window.allProducts && window.displayedProducts) {
+                    window.displayedProducts.slice(0, 6).forEach((product, index) => {
+                        items.push(formatItem(product, index, itemListName));
+                    });
+                } else {
+                    // Fallback: get from DOM
+                    const productCards = document.querySelectorAll('.product-card');
+                    productCards.forEach((card, index) => {
+                        const name = card.querySelector('.product-name')?.textContent;
+                        const title = card.querySelector('.product-title')?.textContent;
+                        const priceText = card.querySelector('.product-price')?.textContent;
+                        const eanText = card.querySelector('.product-ean')?.textContent;
+                        const price = priceText ? parseFloat(priceText.replace(/[€/day,\s]/g, '')) : 0;
+                        const ean = eanText ? eanText.replace('EAN: ', '') : null;
+                        
+                        if (name) {
+                            // Determine category based on page
+                            let itemCategory = 'Consultants';
+                            if (listName === 'managers') itemCategory = 'Managers';
+                            else if (listName === 'leads') itemCategory = 'Leads';
+                            else if (listName === 'interns') itemCategory = 'Interns';
+
+                            const consultantData = {
+                                sku: ean || `${listName}-${index}`,
+                                ean: ean,
+                                name: name,
+                                title: title || 'Consultant',
+                                category: itemCategory,
+                                price: price,
+                                quantity: 1
+                            };
+
+                            items.push(formatItem(consultantData, index, itemListName));
+                        }
+                    });
+                }
             }
             
             const dataLayerObject = {
@@ -319,7 +382,7 @@
                     value: items.reduce((sum, item) => sum + item.price, 0),
                     items: items
                 },
-                list_name: listName
+                item_list_name: itemListName
             };
             
             window.dataLayer.push(dataLayerObject);
@@ -338,7 +401,7 @@
             const productData = getCurrentProductData();
             if (!productData) return;
             
-            const item = formatItem(productData);
+            const item = formatItem(productData, 0);
             
             const dataLayerObject = {
                 event: 'view_item',
@@ -364,7 +427,17 @@
      */
     function pushSelectItem(itemData, listName = 'product_list') {
         try {
-            const item = formatItem(itemData);
+            // Create proper item_list_name
+            let itemListName = listName;
+            if (listName === 'homepage') {
+                itemListName = 'homepage_feature';
+            } else if (listName.startsWith('category')) {
+                itemListName = listName.replace('category ', 'category_');
+            } else if (listName === 'related_products') {
+                itemListName = 'related_products';
+            }
+
+            const item = formatItem(itemData, 0, itemListName);
             
             const dataLayerObject = {
                 event: 'select_item',
@@ -373,7 +446,7 @@
                     value: item.price,
                     items: [item]
                 },
-                list_name: listName
+                item_list_name: itemListName
             };
             
             window.dataLayer.push(dataLayerObject);
@@ -390,7 +463,7 @@
      */
     function pushAddToCart(itemData) {
         try {
-            const item = formatItem(itemData);
+            const item = formatItem(itemData, 0);
             
             const dataLayerObject = {
                 event: 'add_to_cart',
