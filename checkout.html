@@ -406,22 +406,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="header-container">
-            <a href="index.html" class="logo">Consulteo</a>
-            <nav class="nav-categories">
-                <a href="managers.html">Managers</a>
-                <a href="leads.html">Leads</a>
-                <a href="consultants.html">Consultants</a>
-                <a href="interns.html">Interns</a>
-            </nav>
-            <div class="header-actions">
-                <a href="account.html">Account</a>
-                <a href="checkout.html">Cart <span class="cart-count" id="cart-count">0</span></a>
-            </div>
-        </div>
-    </header>
 
     <!-- Breadcrumb -->
     <div class="breadcrumb">
@@ -556,16 +540,7 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-links">
-            <a href="#">CGV</a>
-            <a href="#">Privacy</a>
-            <a href="#">Cookie Policy</a>
-            <a href="#">Blog</a>
-        </div>
-        <p>&copy; 2024 Consulteo - Professional Consultants Marketplace</p>
-    </footer>
+
 
     <script>
         let cart = JSON.parse(localStorage.getItem('consulteo-cart') || '[]');
@@ -707,5 +682,16 @@
             }, 2000);
         }
     </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    fetch("header.html")
+      .then(response => response.text())
+      .then(data => document.body.insertAdjacentHTML("afterbegin", data));
+
+    fetch("footer.html")
+      .then(response => response.text())
+      .then(data => document.body.insertAdjacentHTML("beforeend", data));
+  });
+</script>
 </body>
 </html>
