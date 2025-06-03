@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Consulteo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        /* Header Styles */
+        header {
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .nav-categories {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-categories a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-categories a:hover {
+            background-color: #f8f9fa;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .header-actions a {
+            color: #333;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .header-actions a:hover {
+            background-color: #f8f9fa;
+        }
+
+        .cart-count {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #333;
+            text-align: center;
+        }
+
+        /* Checkout Layout */
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+        }
+
+        .checkout-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .checkout-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* Radio Button Styles */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-option:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 1rem;
+            width: auto;
+        }
+
+        .radio-option.selected {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+
+        .option-info {
+            flex-grow: 1;
+        }
+
+        .option-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .option-price {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .option-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-ean {
+            color: #666;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .item-quantity {
+            background: #f8f9fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin: 0 1rem;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+        }
+
+        .summary-total {
+            border-top: 2px solid #007bff;
+            padding-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* Order Button */
+        .order-button {
+            width: 100%;
+            padding: 1.5rem;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 2rem;
+        }
+
+        .order-button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .order-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #007bff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-categories {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 0 1rem 2rem;
+            }
+
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">Consulteo</a>
+            <nav class="nav-categories">
+                <a href="managers.html">Managers</a>
+                <a href="leads.html">Leads</a>
+                <a href="consultants.html">Consultants</a>
+                <a href="interns.html">Interns</a>
+            </nav>
+            <div class="header-actions">
+                <a href="account.html">Account</a>
+                <a href="checkout.html">Cart <span class="cart-count" id="cart-count">0</span></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">Home</a> > Checkout
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="page-title">Checkout</h1>
+
+        <!-- Success Message -->
+        <div id="success-message" class="success-message">
+            Order placed successfully! Redirecting to confirmation page...
+        </div>
+
+        <div class="checkout-container">
+            <!-- Checkout Form -->
+            <div class="checkout-form">
+                <!-- About You Section -->
+                <div class="checkout-section">
+                    <h3 class="section-title">About You</h3>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                </div>
+
+                <!-- Delivery Address Section -->
+                <div class="checkout-section">
+                    <h3 class="section-title">Delivery Address</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" name="company">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Street Address *</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="postalCode">Postal Code *</label>
+                            <input type="text" id="postalCode" name="postalCode" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                </div>
+
+                <!-- Shipping Options Section -->
+                <div class="checkout-section">
+                    <h3 class="section-title">Shipping Options</h3>
+                    <div class="radio-group">
+                        <label class="radio-option" for="office-delivery">
+                            <input type="radio" id="office-delivery" name="shipping" value="office" onchange="updateShippingCost()">
+                            <div class="option-info">
+                                <div class="option-title">Office Delivery</div>
+                                <div class="option-description">Delivered to your office address</div>
+                            </div>
+                            <div class="option-price">€100</div>
+                        </label>
+                        <label class="radio-option" for="pickup">
+                            <input type="radio" id="pickup" name="shipping" value="pickup" onchange="updateShippingCost()" checked>
+                            <div class="option-info">
+                                <div class="option-title">Pick up at Converteo Office</div>
+                                <div class="option-description">123 Rue de la Paix, 75001 Paris</div>
+                            </div>
+                            <div class="option-price">Free</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Payment Method Section -->
+                <div class="checkout-section">
+                    <h3 class="section-title">Payment Method</h3>
+                    <div class="radio-group">
+                        <label class="radio-option" for="payment-eom">
+                            <input type="radio" id="payment-eom" name="payment" value="eom" checked>
+                            <div class="option-info">
+                                <div class="option-title">90 Days EOM</div>
+                                <div class="option-description">End of month payment terms</div>
+                            </div>
+                        </label>
+                        <label class="radio-option" for="payment-wire">
+                            <input type="radio" id="payment-wire" name="payment" value="wire">
+                            <div class="option-info">
+                                <div class="option-title">Wire Transfer</div>
+                                <div class="option-description">Direct bank transfer</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h3 class="section-title">Order Summary</h3>
+                <div id="cart-items"></div>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">€0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span id="shipping-cost">Free</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total:</span>
+                    <span id="total">€0</span>
+                </div>
+                <button class="order-button" onclick="placeOrder()">Order Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="#">CGV</a>
+            <a href="#">Privacy</a>
+            <a href="#">Cookie Policy</a>
+            <a href="#">Blog</a>
+        </div>
+        <p>&copy; 2024 Consulteo - Professional Consultants Marketplace</p>
+    </footer>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('consulteo-cart') || '[]');
+        let subtotal = 0;
+        let shippingCost = 0;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            displayCartItems();
+            updateShippingCost();
+            
+            // Add event listeners for radio buttons
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Update selected state for visual feedback
+                    document.querySelectorAll('.radio-option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    this.closest('.radio-option').classList.add('selected');
+                });
+            });
+
+            // Set initial selected states
+            document.querySelector('input[name="shipping"]:checked').closest('.radio-option').classList.add('selected');
+            document.querySelector('input[name="payment"]:checked').closest('.radio-option').classList.add('selected');
+        });
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = totalItems;
+        }
+
+        function displayCartItems() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
+                subtotal = 0;
+            } else {
+                let html = '';
+                subtotal = 0;
+                
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    
+                    html += `
+                        <div class="cart-item">
+                            <div class="item-info">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-ean">EAN: ${item.ean}</div>
+                            </div>
+                            <div class="item-quantity">Qty: ${item.quantity}</div>
+                            <div class="item-price">€${itemTotal}</div>
+                        </div>
+                    `;
+                });
+                
+                cartItemsContainer.innerHTML = html;
+            }
+            
+            document.getElementById('subtotal').textContent = `€${subtotal}`;
+            updateTotal();
+        }
+
+        function updateShippingCost() {
+            const selectedShipping = document.querySelector('input[name="shipping"]:checked').value;
+            shippingCost = selectedShipping === 'office' ? 100 : 0;
+            
+            document.getElementById('shipping-cost').textContent = shippingCost === 0 ? 'Free' : `€${shippingCost}`;
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const total = subtotal + shippingCost;
+            document.getElementById('total').textContent = `€${total}`;
+        }
+
+        function placeOrder() {
+            // Validate required fields
+            const requiredFields = ['email', 'password', 'firstName', 'lastName', 'address', 'city', 'postalCode'];
+            let isValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#dc3545';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e9ecef';
+                }
+            });
+            
+            if (!isValid) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (cart.length === 0) {
+                alert('Your cart is empty. Please add some consultants before placing an order.');
+                return;
+            }
+            
+            // Generate order data
+            const orderNumber = Math.floor(1000 + Math.random() * 9000);
+            const orderData = {
+                orderNumber: orderNumber,
+                items: cart,
+                total: subtotal + shippingCost,
+                customer: {
+                    email: document.getElementById('email').value,
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    company: document.getElementById('company').value,
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    postalCode: document.getElementById('postalCode').value,
+                    phone: document.getElementById('phone').value
+                },
+                shipping: {
+                    method: document.querySelector('input[name="shipping"]:checked').value,
+                    cost: shippingCost
+                },
+                payment: document.querySelector('input[name="payment"]:checked').value
+            };
+            
+            // Store order data
+            localStorage.setItem('consulteo-order', JSON.stringify(orderData));
+            
+            // Clear cart
+            localStorage.removeItem('consulteo-cart');
+            
+            // Show success message and redirect
+            document.getElementById('success-message').style.display = 'block';
+            
+            setTimeout(() => {
+                window.location.href = 'confirmation.html';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
